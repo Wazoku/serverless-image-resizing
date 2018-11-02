@@ -22,6 +22,7 @@ exports.handler = function(event, context, callback) {
   const width = parseInt(match[2], 10);
   const height = parseInt(match[3], 10);
   const originalKey = match[4];
+  const newLoc = originalKey.substring(0,originalKey.lastIndexOf('.'))+"_"+width+"x"+height+".png";
 
   if(ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
      callback(null, {
@@ -42,12 +43,13 @@ exports.handler = function(event, context, callback) {
         Body: buffer,
         Bucket: BUCKET,
         ContentType: 'image/png',
-        Key: key,
+        Key: newLoc,
+        ACL:'public-read',
       }).promise()
     )
     .then(() => callback(null, {
         statusCode: '301',
-        headers: {'location': `${URL}/${key}`},
+        headers: {'location': `${URL}/${newLoc}`},
         body: '',
       })
     )
